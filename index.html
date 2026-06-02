@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTX | Structural Engineering</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    /* ── LOADER ── */
+    #ctx-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease;
+    }
+    #ctx-loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 6px;
+      color: #f5f5f5;
+      margin-bottom: 6px;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: ldFadeUp 0.7s ease 0.3s forwards;
+    }
+    .loader-brand span { color: #c8a84b; }
+    .loader-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: #555;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+      opacity: 0;
+      animation: ldFadeIn 0.6s ease 0.7s forwards;
+    }
+    .loader-track {
+      width: 200px;
+      height: 1px;
+      background: #222;
+      position: relative;
+      opacity: 0;
+      animation: ldFadeIn 0.4s ease 0.9s forwards;
+    }
+    .loader-fill {
+      position: absolute;
+      top: 0; left: 0;
+      height: 1px;
+      width: 0%;
+      background: #c8a84b;
+      animation: ldBar 2s cubic-bezier(0.4,0,0.2,1) 1s forwards;
+    }
+    @keyframes ldFadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes ldFadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes ldBar {
+      0%   { width: 0%; }
+      65%  { width: 72%; }
+      100% { width: 100%; }
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0a0a0a;
+      --dark: #111111;
+      --card: #161616;
+      --border: #222222;
+      --gold: #c8a84b;
+      --gold-light: #e2c97e;
+      --white: #f5f5f5;
+      --gray: #888888;
+      --gray-light: #555555;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 60px;
+      height: 70px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--gold); }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-cta {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 8px 24px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 60px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(200,168,75,0.04) 0%, transparent 60%);
+    }
+
+    .hero-tag {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(60px, 9vw, 130px);
+      line-height: 0.92;
+      letter-spacing: 2px;
+      color: var(--white);
+      max-width: 900px;
+      margin-bottom: 32px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+
+    .hero p {
+      max-width: 480px;
+      color: var(--gray);
+      font-size: 15px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--black);
+      padding: 14px 36px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover { background: var(--gold-light); }
+
+    .btn-secondary {
+      color: var(--gray);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-bottom: 1px solid var(--gray-light);
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+
+    .btn-secondary:hover { color: var(--white); }
+
+    .hero-stats {
+      position: absolute;
+      bottom: 60px;
+      right: 60px;
+      display: flex;
+      gap: 48px;
+    }
+
+    .stat { text-align: right; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      background: var(--gold);
+      padding: 14px 0;
+      overflow: hidden;
+    }
+
+    .marquee-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marquee 28s linear infinite;
+    }
+
+    .marquee-track span {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      font-weight: 600;
+      padding: 0 40px;
+    }
+
+    .marquee-track span::after {
+      content: '·';
+      margin-left: 40px;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 100px 60px; }
+
+    .section-tag {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 5vw, 72px);
+      letter-spacing: 2px;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 48px;
+    }
+
+    /* ── PROYECTOS ── */
+    #proyectos { background: var(--dark); }
+
+    .projects-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 48px;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 36px 32px;
+      position: relative;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .project-card:hover { border-color: var(--gold); }
+
+    .project-card:hover .project-arrow { opacity: 1; }
+
+    .project-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 20px;
+      transition: color 0.2s;
+    }
+
+    .project-card:hover .project-num { color: var(--gold); opacity: 0.3; }
+
+    .project-type {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .project-name {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .project-location {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    .project-arrow {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      font-size: 20px;
+      color: var(--gold);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    /* ── PATRIMONIO ── */
+    #patrimonio {
+      background: var(--black);
+      border-top: 1px solid var(--border);
+    }
+
+    .patrimonio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .patrimonio-text p {
+      color: var(--gray);
+      font-size: 15px;
+      line-height: 1.9;
+      margin-bottom: 24px;
+    }
+
+    .patrimonio-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .badge {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      color: var(--gray);
+      padding: 7px 16px;
+    }
+
+    .badge-gold {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .patrimonio-visual {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .pat-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pat-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .pat-icon {
+      font-size: 22px;
+      color: var(--gold);
+      min-width: 28px;
+      margin-top: 2px;
+    }
+
+    .pat-item h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .pat-item p {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* ── SERVICIOS ── */
+    #servicios {
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-top: 48px;
+    }
+
+    .service-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 36px 28px;
+      transition: border-color 0.2s;
+    }
+
+    .service-card:hover { border-color: var(--gold); }
+
+    .service-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      color: var(--border);
+      margin-bottom: 20px;
+    }
+
+    .service-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .service-desc {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* ── CONTACTO ── */
+    #contacto {
+      background: var(--black);
+      border-top: 1px solid var(--border);
+    }
+
+    .contacto-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .contacto-info p {
+      color: var(--gray);
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .contact-items {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .contact-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .contact-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .contact-value {
+      font-size: 14px;
+      color: var(--white);
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .contact-form input,
+    .contact-form textarea,
+    .contact-form select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 14px 18px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder { color: var(--gray-light); }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus,
+    .contact-form select:focus { border-color: var(--gold); }
+
+    .contact-form textarea { height: 120px; resize: none; }
+
+    .contact-form select { color: var(--gray-light); }
+    .contact-form select option { background: var(--card); color: var(--white); }
+
+    .btn-submit {
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+
+    .btn-submit:hover { background: var(--gold-light); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      padding: 40px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 4px;
+      color: var(--white);
+    }
+
+    .footer-logo span { color: var(--gold); }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 1px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .footer-links a {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--gold); }
+
+    /* ── DIVIDER ── */
+    .gold-line {
+      width: 48px;
+      height: 2px;
+      background: var(--gold);
+      margin-bottom: 32px;
+    }
+
+
+    /* ── PANEL TRIO ANIMATION ── */
+    .img-trio {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      gap: 3px;
+      background: #0a0a0a;
+      overflow: hidden;
+    }
+    .img-trio-panel {
+      height: 100%;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+      background-color: #161616;
+      transition: flex 0.85s cubic-bezier(0.4,0,0.2,1);
+    }
+    .img-trio-panel.active { flex: 3; }
+
+
+
+    /* ── CAPTURE MODE (Historia Instagram) ── */
+    .capture-btn {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--gray);
+      padding: 6px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 10px;
+    }
+    body.light .capture-btn { display: flex; align-items: center; gap: 6px; }
+    .capture-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Capture overlay */
+    #captureView {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      background: #fff;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #captureView.active { display: flex; }
+
+    .cv-header {
+      background: #1a1a1a;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .cv-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 4px;
+      color: #f5f5f5;
+    }
+    .cv-brand span { color: #c8a84b; }
+    .cv-tag {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #c8a84b;
+    }
+
+    .cv-image {
+      width: 100%;
+      flex: 0 0 52%;
+      overflow: hidden;
+      position: relative;
+    }
+    .cv-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cv-image-placeholder {
+      width: 100%; height: 100%;
+      background: #f0ede8;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px;
+    }
+    .cv-image-placeholder span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px; color: #ccc; letter-spacing: 4px;
+    }
+
+    .cv-body {
+      flex: 1;
+      padding: 24px 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow: hidden;
+    }
+
+    .cv-project-id {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 2px solid #1a1a1a;
+      padding-bottom: 14px;
+    }
+    .cv-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: #c8a84b;
+      line-height: 1;
+    }
+    .cv-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      color: #1a1a1a;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+
+    .cv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 20px;
+    }
+    .cv-field-label {
+      font-size: 8px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #c8a84b;
+      margin-bottom: 3px;
+      font-weight: 600;
+    }
+    .cv-field-value {
+      font-size: 12px;
+      color: #1a1a1a;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .cv-footer {
+      background: #f7f6f2;
+      border-top: 1px solid #e0ddd6;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .cv-footer-domain {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #888;
+    }
+    .cv-footer-loc {
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: #aaa;
+    }
+
+    .cv-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 910;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #fff;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── LIGHT MODE ── */
+    body.light {
+      --black: #f7f6f2;
+      --dark:  #eeede9;
+      --card:  #ffffff;
+      --border: #e0ddd6;
+      --gold:  #b8922e;
+      --gold-light: #c8a84b;
+      --white: #1a1a1a;
+      --gray:  #555555;
+      --gray-light: #999999;
+      background: var(--black);
+      color: var(--white);
+    }
+    body.light nav {
+      background: rgba(247,246,242,0.95);
+      border-bottom-color: var(--border);
+    }
+    body.light .modal-panel {
+      background: #ffffff;
+      border-left-color: var(--border);
+    }
+    body.light .modal-header {
+      background: #ffffff;
+      border-bottom-color: var(--border);
+    }
+    body.light .meta-item {
+      background: #f7f6f2;
+    }
+    body.light .modal-image {
+      background: #eeede9;
+    }
+    body.light .img-trio {
+      background: #e0ddd6;
+    }
+    body.light .fase {
+      border-color: var(--border);
+    }
+    body.light .fase-header:hover {
+      background: rgba(184,146,46,0.06);
+    }
+    body.light .proceso-gate {
+      border-color: var(--border);
+    }
+    body.light .gate-overlay {
+      background: rgba(247,246,242,0.82);
+    }
+    body.light #ctx-loader {
+      background: #f7f6f2;
+    }
+    body.light .loader-brand { color: #1a1a1a; }
+    body.light .loader-track { background: #e0ddd6; }
+    body.light .marquee-wrap { background: var(--gold); }
+
+    /* Toggle — pill switch */
+    #mode-toggle {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      cursor: pointer;
+      margin-left: 20px;
+      flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s;
+      outline: none;
+    }
+    #mode-toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--gold);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+    }
+    body.light #mode-toggle {
+      background: #dddbd4;
+      border-color: #ccc9c0;
+    }
+    body.light #mode-toggle::after {
+      transform: translateX(22px);
+      background: #1a1a1a;
+    }
+    #mode-toggle:hover { border-color: var(--gold); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-panel {
+      position: absolute;
+      top: 0; right: 0;
+      width: min(780px, 100%);
+      height: 100%;
+      background: #111;
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-overlay.active .modal-panel {
+      transform: translateX(0);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 40px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: #111;
+      z-index: 10;
+    }
+    .modal-header-left {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+    .modal-pnum {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      color: var(--gold);
+      opacity: 0.4;
+      line-height: 1;
+    }
+    .modal-pname {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .modal-close {
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--gray);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .modal-close:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .modal-body { padding: 40px; flex: 1; }
+
+    /* Project image */
+    .modal-image {
+      width: 100%;
+      height: 260px;
+      background: #0a0a0a;
+      border: none;
+      margin-bottom: 36px;
+      overflow: hidden;
+      position: relative;
+    }
+    .modal-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .modal-image-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 10px;
+    }
+    .modal-image-placeholder span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      color: var(--border);
+      letter-spacing: 4px;
+    }
+    .modal-image-placeholder small {
+      font-size: 10px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gray-light);
+    }
+
+    /* Meta grid */
+    .modal-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-bottom: 32px;
+    }
+    .meta-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+    }
+    .meta-label {
+      font-size: 9px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .meta-value {
+      font-size: 13px; color: var(--white);
+      font-weight: 500; line-height: 1.4;
+    }
+
+    /* Description */
+    .modal-desc {
+      font-size: 14px; color: var(--gray);
+      line-height: 1.8; margin-bottom: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Proceso section */
+    .proceso-header {
+      display: flex; align-items: center;
+      gap: 16px; margin-bottom: 32px;
+    }
+    .proceso-tag {
+      font-size: 9px; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--gold);
+    }
+    .proceso-line {
+      flex: 1; height: 1px;
+      background: var(--border);
+    }
+
+    /* Free phases */
+    .fase {
+      border: 1px solid var(--border);
+      margin-bottom: 2px;
+    }
+    .fase-header {
+      display: flex; align-items: center;
+      gap: 16px; padding: 16px 20px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .fase-header:hover { background: rgba(200,168,75,0.04); }
+    .fase-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; color: var(--gold);
+      opacity: 0.5; min-width: 36px;
+    }
+    .fase-title {
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 1px; color: var(--white);
+      text-transform: uppercase;
+    }
+    .fase-toggle {
+      margin-left: auto; color: var(--gold);
+      font-size: 14px; transition: transform 0.2s;
+    }
+    .fase.open .fase-toggle { transform: rotate(45deg); }
+    .fase-body {
+      display: none; padding: 0 20px 20px 72px;
+    }
+    .fase.open .fase-body { display: block; }
+    .fase-body ul {
+      list-style: none; padding: 0; margin: 0;
+    }
+    .fase-body ul li {
+      font-size: 13px; color: var(--gray);
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      line-height: 1.5;
+    }
+    .fase-body ul li::before {
+      content: '→ ';
+      color: var(--gold);
+      opacity: 0.5;
+    }
+    .fase-body ul li:last-child { border-bottom: none; }
+
+    /* Lock gate */
+    .proceso-gate {
+      margin-top: 4px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .gate-blur {
+      padding: 24px 20px 24px 72px;
+      filter: blur(4px);
+      pointer-events: none;
+      user-select: none;
+      opacity: 0.3;
+    }
+    .gate-blur ul { list-style: none; padding: 0; margin: 0; }
+    .gate-blur ul li {
+      font-size: 13px; color: var(--gray);
+      padding: 6px 0;
+    }
+    .gate-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px;
+      background: rgba(17,17,17,0.7);
+    }
+    .gate-icon {
+      font-size: 28px; color: var(--gold); opacity: 0.6;
+    }
+    .gate-text {
+      font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gray);
+      text-align: center;
+    }
+    .gate-btn {
+      margin-top: 8px;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 12px 32px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .gate-btn:hover { background: var(--gold-light); }
+
+    /* Modal responsive */
+    @media (max-width: 900px) {
+      .modal-panel { width: 100%; border-left: none; }
+      .modal-body { padding: 24px; }
+      .modal-header { padding: 20px 24px; }
+      .modal-meta { grid-template-columns: 1fr; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      section { padding: 70px 24px; }
+      .hero { padding: 0 24px; }
+      .hero-stats { display: none; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .patrimonio-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .contacto-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="ctx-loader">
+    <div class="loader-brand"><span>CTX</span> | Structural Engineering</div>
+    <div class="loader-sub">Ingeniería Estructural</div>
+    <div class="loader-track">
+      <div class="loader-fill"></div>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var l = document.getElementById('ctx-loader');
+        l.classList.add('hidden');
+        setTimeout(function() { l.style.display = 'none'; }, 650);
+      }, 3200);
+    });
+  </script>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">CTX <span>|</span> Structural Engineering</a>
+  <ul class="nav-links">
+    <li><a href="#proyectos">Proyectos</a></li>
+    <li><a href="#patrimonio">Patrimonio</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Contacto</a>
+  <button id="mode-toggle" title="Modo claro / oscuro" aria-label="Toggle modo"></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <p class="hero-tag">Ingeniería Estructural — Piura, Perú</p>
+  <h1>ESTRUCTURA<br>QUE <em>RESISTE</em><br>EL TIEMPO</h1>
+  <p>Diseño estructural para proyectos residenciales, industriales, institucionales y patrimonio histórico. Rigor técnico, criterio real.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">11+</div>
+      <div class="stat-label">Proyectos</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">5+</div>
+      <div class="stat-label">Años</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Regiones</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Concreto Reforzado</span>
+    <span>Estructuras Metálicas</span>
+    <span>Mampostería Confinada</span>
+    <span>Patrimonio Histórico</span>
+    <span>Industrial</span>
+    <span>Residencial</span>
+    <span>Institucional</span>
+    <span>BIM</span>
+    <span>Concreto Reforzado</span>
+    <span>Estructuras Metálicas</span>
+    <span>Mampostería Confinada</span>
+    <span>Patrimonio Histórico</span>
+    <span>Industrial</span>
+    <span>Residencial</span>
+    <span>Institucional</span>
+    <span>BIM</span>
+  </div>
+</div>
+
+<!-- PROYECTOS -->
+<section id="proyectos">
+  <div class="projects-header">
+    <div>
+      <p class="section-tag">Portafolio</p>
+      <h2 class="section-title">PROYECTOS</h2>
+    </div>
+  </div>
+  <div class="projects-grid">
+
+    <div class="project-card" data-id="P001">
+      <div class="project-num">P001</div>
+      <div class="project-type">Educacional</div>
+      <div class="project-name">CE14031 Símbila</div>
+      <div class="project-location">Símbila, Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P002">
+      <div class="project-num">P002</div>
+      <div class="project-type">Demolición y Reconstrucción</div>
+      <div class="project-name">DEM14031 Símbila</div>
+      <div class="project-location">Símbila, Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P003">
+      <div class="project-num">P003</div>
+      <div class="project-type">Educacional</div>
+      <div class="project-name">CE20446 Viduque</div>
+      <div class="project-location">Viduque, Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P004">
+      <div class="project-num">P004</div>
+      <div class="project-type">Deportivo / Público</div>
+      <div class="project-name">Minicomplejo Deportivo</div>
+      <div class="project-location">Gobierno Regional Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P005">
+      <div class="project-num">P005</div>
+      <div class="project-type">Industrial</div>
+      <div class="project-name">Komatsu Piura</div>
+      <div class="project-location">Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P006">
+      <div class="project-num">P006</div>
+      <div class="project-type">Institucional / PNP</div>
+      <div class="project-name">Residencia 7° Brigada PNP</div>
+      <div class="project-location">Pimentel, Lambayeque</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P007">
+      <div class="project-num">P007</div>
+      <div class="project-type">Educacional</div>
+      <div class="project-name">CE00117 GORE San Martín</div>
+      <div class="project-location">San Martín</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P008">
+      <div class="project-num">P008</div>
+      <div class="project-type">Educacional</div>
+      <div class="project-name">CE Bernal</div>
+      <div class="project-location">Bernal, Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P009">
+      <div class="project-num">P009</div>
+      <div class="project-type">Residencial</div>
+      <div class="project-name">Casa Playa Máncora</div>
+      <div class="project-location">Máncora, Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P010">
+      <div class="project-num">P010</div>
+      <div class="project-type">Industrial / Frigorífico</div>
+      <div class="project-name">FRIOHM Tambogrande</div>
+      <div class="project-location">Tambogrande, Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" data-id="P011">
+      <div class="project-num">P011</div>
+      <div class="project-type">Residencial / Multifamiliar</div>
+      <div class="project-name">Edificio Departamentos ALB</div>
+      <div class="project-location">Piura</div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <div class="project-card" style="background: transparent; border: 1px dashed var(--border); display: flex; align-items: center; justify-content: center; min-height: 160px;">
+      <div style="text-align: center;">
+        <div style="font-size: 28px; color: var(--border); margin-bottom: 8px;">+</div>
+        <div style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light);">En curso</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PATRIMONIO -->
+<section id="patrimonio">
+  <p class="section-tag">Especialización</p>
+  <h2 class="section-title">PATRIMONIO<br>HISTÓRICO</h2>
+  <div class="patrimonio-grid">
+    <div class="patrimonio-text">
+      <div class="gold-line"></div>
+      <p>Catacaos concentra uno de los conjuntos de casonas históricas más significativos del norte del Perú. Construidas en adobe y quincha, muchas de estas estructuras se encuentran en estado crítico — no por falta de valor, sino por ausencia de criterio técnico especializado.</p>
+      <p>CTX desarrolla un protocolo de evaluación e intervención estructural específico para este tipo de patrimonio: diagnóstico de patologías, propuesta de consolidación y acompañamiento en la restauración sin comprometer la integridad histórica del bien.</p>
+      <div class="patrimonio-badges">
+        <span class="badge badge-gold">Adobe</span>
+        <span class="badge badge-gold">Quincha</span>
+        <span class="badge">Diagnóstico Estructural</span>
+        <span class="badge">Conservación</span>
+        <span class="badge">Restauración</span>
+        <span class="badge">Catacaos</span>
+      </div>
+    </div>
+    <div class="patrimonio-visual">
+      <div class="pat-item">
+        <div class="pat-icon">◈</div>
+        <div>
+          <h4>Diagnóstico de Patologías</h4>
+          <p>Identificación de fisuras, humedad, deformaciones y riesgo de colapso en sistemas constructivos tradicionales.</p>
+        </div>
+      </div>
+      <div class="pat-item">
+        <div class="pat-icon">◈</div>
+        <div>
+          <h4>Protocolo de Intervención CTX</h4>
+          <p>Metodología de consolidación estructural adaptada a adobe y quincha, compatible con normativa de patrimonio.</p>
+        </div>
+      </div>
+      <div class="pat-item">
+        <div class="pat-icon">◈</div>
+        <div>
+          <h4>Acompañamiento Técnico</h4>
+          <p>Supervisión durante la restauración para garantizar que los refuerzos no comprometan el valor histórico del bien.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <p class="section-tag">Capacidades</p>
+  <h2 class="section-title">SERVICIOS</h2>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-num">01</div>
+      <div class="service-title">Diseño Estructural</div>
+      <div class="service-desc">Concreto reforzado, acero estructural, sistemas mixtos. Desde vivienda hasta industrial.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">02</div>
+      <div class="service-title">Expediente Técnico</div>
+      <div class="service-desc">Memorias de cálculo, planos estructurales y especificaciones técnicas para licencias y ejecución.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">03</div>
+      <div class="service-title">Peritaje Estructural</div>
+      <div class="service-desc">Evaluación del estado actual de estructuras existentes, diagnóstico de daños y recomendaciones.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">04</div>
+      <div class="service-title">Patrimonio Histórico</div>
+      <div class="service-desc">Intervención en casonas de adobe y quincha. Protocolo especializado para Catacaos y zona norte.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <p class="section-tag">Hablemos</p>
+  <h2 class="section-title">CONTACTO</h2>
+  <div class="contacto-grid">
+    <div class="contacto-info">
+      <div class="gold-line"></div>
+      <p>¿Tienes un proyecto residencial, industrial, institucional, o una casona que necesita intervención estructural? Cuéntanos.</p>
+      <div class="contact-items">
+        <div class="contact-item">
+          <span class="contact-label">Email</span>
+          <span class="contact-value">abel.pacherrez@gmail.com</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">Ubicación</span>
+          <span class="contact-value">Piura, Perú</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">Instagram</span>
+          <a class="contact-value" href="https://www.instagram.com/alexander.lazo15/" target="_blank" rel="noopener noreferrer" style="color: var(--gold); text-decoration: none;">@alexander.lazo15</a>
+        </div>
+      </div>
+    </div>
+    <form class="contact-form" onsubmit="return false;">
+      <div class="form-row">
+        <input type="text" placeholder="Nombre">
+        <input type="email" placeholder="Email">
+      </div>
+      <select>
+        <option value="" disabled selected>Tipo de proyecto</option>
+        <option>Residencial</option>
+        <option>Industrial</option>
+        <option>Educacional / Institucional</option>
+        <option>Patrimonio Histórico</option>
+        <option>Peritaje</option>
+        <option>Otro</option>
+      </select>
+      <textarea placeholder="Describe brevemente tu proyecto..."></textarea>
+      <button type="submit" class="btn-submit">Enviar Consulta</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CTX <span>|</span> Structural Engineering</div>
+  <div class="footer-copy">© 2026 — Todos los derechos reservados</div>
+  <div class="footer-links">
+    <a href="#proyectos">Proyectos</a>
+    <a href="#patrimonio">Patrimonio</a>
+    <a href="#servicios">Servicios</a>
+    <a href="#contacto">Contacto</a>
+    <a href="https://www.instagram.com/alexander.lazo15/" target="_blank" rel="noopener noreferrer">Instagram</a>
+  </div>
+</footer>
+
+
+<!-- CAPTURE VIEW — Historia Instagram -->
+<div id="captureView">
+  <button class="cv-close" id="cvClose">✕</button>
+  <div class="cv-header">
+    <div class="cv-brand">CTX <span>|</span> Structural Engineering</div>
+    <div class="cv-tag">Ingeniería Estructural · Piura, Perú</div>
+  </div>
+  <div class="cv-image" id="cvImage">
+    <div class="cv-image-placeholder"><span>CTX</span></div>
+  </div>
+  <div class="cv-body">
+    <div class="cv-project-id">
+      <div class="cv-num" id="cvNum"></div>
+      <div class="cv-name" id="cvName"></div>
+    </div>
+    <div class="cv-grid">
+      <div>
+        <div class="cv-field-label">Sistema Estructural</div>
+        <div class="cv-field-value" id="cvSistema"></div>
+      </div>
+      <div>
+        <div class="cv-field-label">Alcance</div>
+        <div class="cv-field-value" id="cvAlcance"></div>
+      </div>
+      <div>
+        <div class="cv-field-label">Arquitecto</div>
+        <div class="cv-field-value" id="cvArquitecto"></div>
+      </div>
+      <div>
+        <div class="cv-field-label">Constructora / Cliente</div>
+        <div class="cv-field-value" id="cvConstructora"></div>
+      </div>
+      <div>
+        <div class="cv-field-label">Software</div>
+        <div class="cv-field-value" id="cvSoftware"></div>
+      </div>
+      <div>
+        <div class="cv-field-label">Estado</div>
+        <div class="cv-field-value" id="cvEstado"></div>
+      </div>
+    </div>
+  </div>
+  <div class="cv-footer">
+    <div class="cv-footer-domain">ctxstructural.com</div>
+    <div class="cv-footer-loc" id="cvLoc"></div>
+  </div>
+</div>
+
+<!-- MODAL OVERLAY -->
+<div class="modal-overlay" id="projectModal">
+  <div class="modal-panel" id="modalPanel">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-pnum" id="mNum"></div>
+        <div class="modal-pname" id="mName"></div>
+      </div>
+      <button class="capture-btn" id="captureBtn">⬡ Historia</button>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="modal-image" id="mImage">
+        <div class="modal-image-placeholder">
+          <span>CTX</span>
+          <small>Imagen del proyecto</small>
+        </div>
+      </div>
+
+      <div class="modal-meta">
+        <div class="meta-item">
+          <div class="meta-label">Sistema Estructural</div>
+          <div class="meta-value" id="mSistema">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Alcance</div>
+          <div class="meta-value" id="mAlcance">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Software</div>
+          <div class="meta-value" id="mSoftware">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Magnitud</div>
+          <div class="meta-value" id="mMagnitud">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Estado</div>
+          <div class="meta-value" id="mEstado">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Normas</div>
+          <div class="meta-value" id="mNormas">—</div>
+        </div>
+      </div>
+
+      <!-- COLABORADORES -->
+      <div class="modal-meta" style="margin-top: 2px;">
+        <div class="meta-item" style="border-color: rgba(200,168,75,0.25);">
+          <div class="meta-label">Arquitecto / Arquitecta</div>
+          <div class="meta-value" id="mArquitecto">—</div>
+        </div>
+        <div class="meta-item" style="border-color: rgba(200,168,75,0.25);">
+          <div class="meta-label">Constructora / Cliente</div>
+          <div class="meta-value" id="mConstructora">—</div>
+        </div>
+      </div>
+
+      <div class="modal-desc" id="mDesc"></div>
+
+      <div class="proceso-header">
+        <span class="proceso-tag">Proceso Constructivo CTX</span>
+        <div class="proceso-line"></div>
+      </div>
+
+      <div id="mFases"></div>
+
+      <div class="proceso-gate">
+        <div class="gate-blur">
+          <ul>
+            <li>03 — Modelado y análisis sísmico</li>
+            <li>04 — QA/QC estructural</li>
+            <li>05 — Diseño de elementos</li>
+            <li>06 — Cimentación</li>
+            <li>07 — Documentación técnica</li>
+          </ul>
+        </div>
+        <div class="gate-overlay">
+          <div class="gate-icon">◈</div>
+          <div class="gate-text">Proceso completo · Memorias de cálculo<br>Planos estructurales · Modelo ETABS</div>
+          <a href="#" class="gate-btn" id="gateBtn" target="_blank">Próximamente</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const PROJECTS = {
+  P001: {
+    num:"P001",name:"CE14031 Símbila",
+    sistema:"Mamposteía confinada + losa aligerada",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, SAFE",magnitud:"Institución educativa — múltiples módulos",
+    estado:"Entregado",normas:"E.030, E.060, E.070",
+    arquitecto:"Por confirmar",constructora:"Cliente público — MINEDU",
+    imagenes:["assets/proyectos/P001_a.jpg","assets/proyectos/P001_b.jpg","assets/proyectos/P001_c.jpg","assets/proyectos/P001_d.jpg"],
+    desc:"Centro educativo en Símbila, Piura. Diseño bajo normativa sísmica peruana con sistema de mamposteía confinada. Múltiples módulos independientes con análisis de irregularidades y verificación de derivas.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición del sistema resistente","Ruta real de cargas","Identificación de irregularidades","Lectura de planos ARQ y detección de inconsistencias"]},
+      {num:"01",title:"Configuración del Modelo",items:["Definición de unidades y grillas","Criterios de idealización estructural","Materiales: f'c=210 kg/cm², fy=4200 kg/cm²","Modelado de muros confinantes y columnas"]}
+    ]
+  },
+  P002: {
+    num:"P002",name:"DEM14031 Símbila",
+    sistema:"Evaluación de estructura existente + nueva mamposteía confinada",
+    alcance:"Peritaje estructural + Demolición técnica + Diseño de reconstrucción",
+    software:"ETABS, AutoCAD",magnitud:"Módulos existentes IE14031",
+    estado:"Entregado",normas:"E.030, E.060, E.070, E.080",
+    arquitecto:"Por confirmar",constructora:"Cliente público — MINEDU",
+    desc:"Evaluación del estado estructural de módulos existentes de la IE14031 en Símbila. Diagnóstico de patologías, verificación de capacidad residual y desarrollo del proyecto de demolición controlada y reconstrucción.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Diagnóstico Estructural",items:["Inspección visual y registro de patologías","Evaluación de daños: fisuras, humedad, deformaciones","Determinación de capacidad resistente residual","Decisión técnica: demolición vs. reforzamiento"]},
+      {num:"01",title:"Plan de Demolición",items:["Secuencia de demolición sin afectar módulos adyacentes","Puntos de corte y apuntalamiento provisional","Protección de redes existentes","Verificación de estabilidad durante proceso"]}
+    ]
+  },
+  P003: {
+    num:"P003",name:"CE20446 Viduque",
+    sistema:"Mamposteía confinada + losa aligerada",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, SAFE",magnitud:"Institución educativa — zona rural",
+    estado:"Entregado",normas:"E.030, E.060, E.070",
+    arquitecto:"Por confirmar",constructora:"Cliente público — MINEDU",
+    desc:"Centro educativo en Viduque, Piura. Zona sísmica 4. Diseño con énfasis en constructibilidad para zona rural: materiales locales disponibles, detalles constructivos simplificados sin comprometer el comportamiento sísmico.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición del sistema resistente","Ruta real de cargas","Identificación de irregularidades","Parámetros sísmicos zona 4 — NTE E.030"]},
+      {num:"01",title:"Configuración del Modelo",items:["Definición de unidades y geometría","Criterios de idealización","Definición de materiales y secciones","Control de diafragmas rígidos"]}
+    ]
+  },
+  P004: {
+    num:"P004",name:"Minicomplejo Deportivo GORE Piura",
+    sistema:"Estructura metálica + losa colaborante",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, SAP2000, AutoCAD",magnitud:"Complejo deportivo público — Gobierno Regional",
+    estado:"Entregado",normas:"E.030, E.090, E.020",
+    arquitecto:"Por confirmar",constructora:"Gobierno Regional Piura",
+    desc:"Minicomplejo deportivo para el Gobierno Regional de Piura. Estructura metálica con cubierta de cobertura liviana. Análisis de grandes luces, control de deflexiones y diseño de uniones metálicas bajo AISC.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición del mecanismo resistente metálico","Análisis de grandes luces y predimensionamiento","Ruta de cargas: cobertura → vigas → columnas → cimentación","Identificación de puntos críticos de conexión"]},
+      {num:"01",title:"Configuración del Modelo",items:["Definición de perfiles metálicos y condiciones de apoyo","Cargas de viento según E.020","Modelado de arriostramientos","Control de esbeltez en elementos comprimidos"]}
+    ]
+  },
+  P005: {
+    num:"P005",name:"Komatsu Piura",
+    sistema:"Estructura metálica — nave industrial",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, SAP2000, AutoCAD",magnitud:"Nave industrial — uso industrial pesado",
+    estado:"Entregado",normas:"E.030, E.090, AISC 360",
+    arquitecto:"Por confirmar",constructora:"Komatsu Perú",
+    desc:"Nave industrial para operaciones de Komatsu en Piura. Estructura metálica de marco rígido con cargas de operación industrial. Diseño de cimentación para equipos de alto peso y análisis de cargas dinámicas.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición del sistema de marco rígido metálico","Inventario de cargas industriales: equipos, puente grúa, operación","Ruta de cargas gravitacionales y sísmicas","Parámetros de cimentación industrial"]},
+      {num:"01",title:"Configuración del Modelo",items:["Configuración de perfiles WF y HSS","Modelado de conexiones rígidas","Cargas de viento en nave abierta","Combinaciones de carga con operación industrial"]}
+    ]
+  },
+  P006: {
+    num:"P006",name:"Residencia 7° Brigada PNP",
+    sistema:"Concreto reforzado — pórticos + muros de corte",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, SAFE",magnitud:"Edificio residencial institucional — múltiples pisos",
+    estado:"Entregado",normas:"E.030, E.060",
+    arquitecto:"Por confirmar",constructora:"PNP — Institución pública",
+    desc:"Edificio de residencia para la 7° Brigada PNP en Pimentel, Lambayeque. Sistema dual de pórticos y muros de corte. Diseño sísmico con control de irregularidades y verificación de derivas bajo NTE E.030.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición del sistema dual: pórticos + muros","Distribución de rigideces en planta","Identificación de irregularidades","Parámetros sísmicos Lambayeque — zona 4"]},
+      {num:"01",title:"Configuración del Modelo",items:["Definición de secciones y materiales","Modelado de muros con Shell","Control de diafragmas rígidos por nivel","Asignación de cargas por uso residencial institucional"]}
+    ]
+  },
+  P007: {
+    num:"P007",name:"CE00117 GORE San Martín",
+    sistema:"Mamposteía confinada + concreto reforzado",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, SAFE",magnitud:"Institución educativa — Gobierno Regional San Martín",
+    estado:"Entregado",normas:"E.030, E.060, E.070",
+    arquitecto:"Por confirmar",constructora:"Gobierno Regional San Martín",
+    desc:"Centro educativo para el Gobierno Regional de San Martín. Zona sísmica 3. Combinación de mamposteía confinada y elementos de concreto reforzado. Diseño con criterio de constructibilidad regional.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición del sistema resistente mixto","Parámetros sísmicos zona 3 — NTE E.030","Identificación de irregularidades en planta","Ruta de cargas gravitacionales y sísmicas"]},
+      {num:"01",title:"Configuración del Modelo",items:["Modelado de muros y columnas confinantes","Definición de losa aligerada como diafragma","Control de relación largo/ancho de muros","Verificación de densidad mínima de muros"]}
+    ]
+  },
+  P008: {
+    num:"P008",name:"CE Bernal",
+    sistema:"Mamposteía confinada + losa aligerada",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, SAFE",magnitud:"Institución educativa — Bernal, Piura",
+    estado:"Entregado",normas:"E.030, E.060, E.070",
+    arquitecto:"Por confirmar",constructora:"Cliente público — MINEDU",
+    desc:"Centro educativo en Bernal, Piura. Zona costera con condiciones de suelo específicas. Diseño sísmico bajo NTE E.030 con verificación de columnas y vigas collar. Expediente técnico completo para ejecución.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición del sistema de mamposteía confinada","Análisis de condiciones de suelo costero","Ruta de cargas y predimensionamiento","Verificación de densidad de muros mínima"]},
+      {num:"01",title:"Configuración del Modelo",items:["Geometría y grillas según arquitectura","Materiales: ladrillo King Kong, f'c=175/210 kg/cm²","Modelado de columnas y vigas de confinamiento","Asignación de cargas vivas educacionales"]}
+    ]
+  },
+  P009: {
+    num:"P009",name:"Casa Playa Máncora",
+    sistema:"Concreto reforzado — pórticos",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, AutoCAD",magnitud:"Vivienda unifamiliar — zona costera",
+    estado:"Entregado",normas:"E.030, E.060, E.050",
+    arquitecto:"Por confirmar",constructora:"Cliente privado",
+    desc:"Vivienda unifamiliar en primera línea de playa, Máncora. Ambiente marino con alta agresividad química. Diseño estructural con recubrimientos especiales, concreto de alta resistencia y detallado sísmico para zona costera.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición de pórticos en dos direcciones","Análisis de agresividad del ambiente marino","Parámetros sísmicos zona costera — zona 4","Condiciones de cimentación en suelo arenoso costero"]},
+      {num:"01",title:"Configuración del Modelo",items:["Secciones con recubrimiento aumentado (ambiente marino)","Modelado de losa plana y vigas","f'c ≥ 280 kg/cm² por durabilidad en ambiente marino","Cargas de viento en zona costera abierta"]}
+    ]
+  },
+  P010: {
+    num:"P010",name:"FRIOHM Tambogrande",
+    sistema:"Estructura metálica — marco rígido + cimentación aislada",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, AutoCAD, SAP2000",magnitud:"Nave industrial — cámara frigorífica y edificio administrativo",
+    estado:"Activo",normas:"E.030, E.090, E.060, E.020, AISC 360",
+    arquitecto:"Arq. Vásquez",constructora:"FRIOHM — Cliente privado",
+    desc:"Nave industrial para FRIOHM en Tambogrande, Piura. Dos estructuras independientes: centro de acopio (ESTR-01) y edificio administrativo (ESTR-02). Zona sísmica 4, Z=0.45. Cimentación: zapatas aisladas + pedestales + placas base.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Dos estructuras independientes: ESTR-01 (nave) / ESTR-02 (administrativo)","Sistema resistente: marco rígido metálico — columna tubo 4×4×3mm","Ruta de cargas: cobertura → pórtico metálico → pedestal → zapata","Parámetros sísmicos: Z=0.45, zona 4, categoría C","Inconsistencia pernos: Ø1/2'' (ARQ) vs Ø3/8'' (E-02) — observación activa"]},
+      {num:"01",title:"Configuración del Modelo — ESTR-01",items:["Ejes transversales A–D, longitudinales 01–09","Niveles: N.F.-1.20 / NPT+0.00 / NPT+2.50 / NPT+5.00","Perfiles: columna CM-01 tubo 4×4×3mm","Placa base PL-01: 200×200×12mm","Pedestal PD-01: 0.20×0.20m, H variable, f'c=210, fy=4200"]}
+    ]
+  },
+  P011: {
+    num:"P011",name:"Edificio Departamentos ALB",
+    sistema:"Concreto reforzado — sistema dual (pórticos + muros de corte)",
+    alcance:"Diseño estructural + Expediente técnico",
+    software:"ETABS, SAFE",magnitud:"Edificio multifamiliar — varios pisos",
+    estado:"Activo",normas:"E.030, E.060",
+    arquitecto:"Por confirmar",constructora:"Cliente privado",
+    desc:"Edificio multifamiliar en Piura. Sistema dual de pórticos y muros de corte. Análisis sísmico dinámico espectral, control de irregularidades, diseño de losas con SAFE y cimentación combinada.",
+    gumroad:"#",
+    fases:[
+      {num:"00",title:"Pre-Modelo",items:["Definición del sistema dual","Distribución de muros en planta — control de excentricidades","Identificación de irregularidades en altura y planta","Parámetros sísmicos zona 4 — Piura"]},
+      {num:"01",title:"Configuración del Modelo",items:["Modelado de muros con Shell no-lineal","Definición de diafragmas rígidos por nivel","Secciones de vigas y columnas según predimensionamiento","Asignación de cargas vivas residenciales por nivel"]}
+    ]
+  }
+};
+
+const overlay  = document.getElementById('projectModal');
+const closeBtn = document.getElementById('modalClose');
+
+function openModal(id) {
+  const p = PROJECTS[id];
+  if (!p) return;
+  document.getElementById('mNum').textContent    = p.num;
+  document.getElementById('mName').textContent   = p.name;
+  document.getElementById('mSistema').textContent  = p.sistema;
+  document.getElementById('mAlcance').textContent  = p.alcance;
+  document.getElementById('mSoftware').textContent = p.software;
+  document.getElementById('mMagnitud').textContent = p.magnitud;
+  document.getElementById('mEstado').textContent   = p.estado;
+  document.getElementById('mNormas').textContent   = p.normas;
+  document.getElementById('mDesc').textContent     = p.desc;
+  document.getElementById('gateBtn').href = p.gumroad || '#';
+  document.getElementById('mArquitecto').textContent   = p.arquitecto  || 'Por confirmar';
+  document.getElementById('mConstructora').textContent = p.constructora || 'Por confirmar';
+
+  const fasesEl = document.getElementById('mFases');
+  fasesEl.innerHTML = '';
+  (p.fases || []).forEach(function(f) {
+    const div = document.createElement('div');
+    div.className = 'fase';
+    div.innerHTML =
+      '<div class="fase-header">' +
+        '<span class="fase-num">' + f.num + '</span>' +
+        '<span class="fase-title">' + f.title + '</span>' +
+        '<span class="fase-toggle">+</span>' +
+      '</div>' +
+      '<div class="fase-body"><ul>' +
+        f.items.map(function(i){ return '<li>' + i + '</li>'; }).join('') +
+      '</ul></div>';
+    div.querySelector('.fase-header').addEventListener('click', function() {
+      div.classList.toggle('open');
+    });
+    fasesEl.appendChild(div);
+  });
+
+  window._currentProject = p;
+  const imgEl = document.getElementById('mImage');
+  if (p.imagenes && p.imagenes.length >= 2) {
+    const trio = p.imagenes;
+    imgEl.innerHTML = '<div class="img-trio">' +
+      trio.map(function(src,i){
+        return '<div class="img-trio-panel' + (i===0?' active':'') + '">' +
+               '<img src="' + src + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;">' +
+               '</div>';
+      }).join('') +
+    '</div>';
+    // cycle active panel every 1s
+    if (window._trioTimer) clearInterval(window._trioTimer);
+    let _active = 0;
+    window._trioTimer = setInterval(function(){
+      const panels = imgEl.querySelectorAll('.img-trio-panel');
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      _active = (_active + 1) % panels.length;
+      panels[_active].classList.add('active');
+    }, 1000);
+  } else if (p.imagen) {
+    if (window._trioTimer) { clearInterval(window._trioTimer); window._trioTimer = null; }
+    imgEl.innerHTML = '<img src="' + p.imagen + '" alt="' + p.name + '">';
+  } else {
+    if (window._trioTimer) { clearInterval(window._trioTimer); window._trioTimer = null; }
+    imgEl.innerHTML = '<div class="modal-image-placeholder"><span>CTX</span><small>' + p.name + '</small></div>';
+  }
+
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  if (window._trioTimer) { clearInterval(window._trioTimer); window._trioTimer = null; }
+}
+
+document.querySelectorAll('.project-card[data-id]').forEach(function(card) {
+  card.addEventListener('click', function() { openModal(card.dataset.id); });
+});
+
+closeBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+// ── CAPTURE MODE ──
+const captureBtn  = document.getElementById('captureBtn');
+const captureView = document.getElementById('captureView');
+const cvClose     = document.getElementById('cvClose');
+
+captureBtn.addEventListener('click', function() {
+  const p = window._currentProject;
+  if (!p) return;
+  document.getElementById('cvNum').textContent    = p.num;
+  document.getElementById('cvName').textContent   = p.name;
+  document.getElementById('cvSistema').textContent  = p.sistema;
+  document.getElementById('cvAlcance').textContent  = p.alcance;
+  document.getElementById('cvArquitecto').textContent  = p.arquitecto || 'Por confirmar';
+  document.getElementById('cvConstructora').textContent = p.constructora || 'Por confirmar';
+  document.getElementById('cvSoftware').textContent = p.software;
+  document.getElementById('cvEstado').textContent   = p.estado;
+  document.getElementById('cvLoc').textContent      = p.magnitud || '';
+
+  const cvImg = document.getElementById('cvImage');
+  if (p.imagenes && p.imagenes.length > 0) {
+    cvImg.innerHTML = '<img src="' + p.imagenes[1] || p.imagenes[0] + '" alt="' + p.name + '">';
+  } else if (p.imagen) {
+    cvImg.innerHTML = '<img src="' + p.imagen + '" alt="' + p.name + '">';
+  } else {
+    cvImg.innerHTML = '<div class="cv-image-placeholder"><span>CTX</span></div>';
+  }
+
+  captureView.classList.add('active');
+  document.body.style.overflow = 'hidden';
+});
+
+cvClose.addEventListener('click', function() {
+  captureView.classList.remove('active');
+  document.body.style.overflow = '';
+});
+
+// ── LIGHT MODE TOGGLE ──
+const modeBtn = document.getElementById('mode-toggle');
+const savedMode = localStorage.getItem('ctx-mode');
+if (savedMode === 'light') document.body.classList.add('light');
+modeBtn.addEventListener('click', function() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  localStorage.setItem('ctx-mode', isLight ? 'light' : 'dark');
+});
+
+</script>
+
+</body>
+</html>
